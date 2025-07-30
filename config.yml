@@ -1,0 +1,6 @@
+tunnel: <tunnel-id>
+credentials-file: /root/.cloudflared/<tunnel-id>.json
+ingress:
+  - hostname: immich.yourdomain.com
+    service: http://localhost:2283
+  - service: http_status:404
