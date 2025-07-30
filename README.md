@@ -1,60 +1,68 @@
 # 📸 Self-Hosted Immich Server with Docker and Cloudflare Tunnel
 
-This project allows you to host your own **photo and video gallery** using [Immich](https://github.com/immich-app/immich), running on your own server — **secure**, **free**, and **private**.
-
-No need to pay for Google Photos, iCloud, or other platforms to store your personal memories. This setup uses **Docker**, **Cloudflare Tunnel**, and any machine with some storage (like an old laptop or desktop).
+This project enables you to host your own **photo and video gallery** using [Immich](https://github.com/immich-app/immich) on your personal server. It’s **secure**, **free**, and **private**, eliminating the need for paid services like Google Photos or iCloud to store your memories. The setup leverages **Docker**, **Cloudflare Tunnel**, and any machine with storage (e.g., an old laptop or desktop).
 
 ---
 
-## 🔒 Why?
+## 🔒 Why Use This?
 
-- I value my **privacy**
-- I don't want to pay for my **own pictures**
-- I enjoy building my **homelab**
-- I had an old **laptop with 1TB** storage sitting around
-
----
-
-## 💻 What You'll Need
-
-- A Linux machine (like Ubuntu Server) or even an old laptop
-- Docker + Docker Compose installed
-- Cloudflare account (free)
-- Optional: your own domain (e.g. `photos.yourdomain.com`)
+- Prioritize **privacy** for your personal data
+- Avoid **paying** for storing your own media
+- Enjoy building your **homelab**
+- Repurpose an old machine (e.g., a **laptop with 1TB** storage)
 
 ---
 
-## 🚀 Step-by-Step Installation Guide
+## 💻 Prerequisites
+
+- A Linux machine (e.g., Ubuntu Server) or an old laptop
+- **Docker** and **Docker Compose** installed
+- A free **Cloudflare account**
+- Optional: A custom domain (e.g., `photos.yourdomain.com`)
+
+---
+
+## 🚀 Installation Guide
 
 ### ✅ Step 1: Install Docker and Docker Compose
+
+Update your system and install Docker:
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install docker.io docker-compose -y
 sudo systemctl enable docker
 sudo usermod -aG docker $USER
-🔁 Log out and back in (or run newgrp docker) to activate Docker group permissions.
+```
 
-✅ Step 2: Clone This Repo
-bash
-Copy
-Edit
+🔁 **Log out and back in** (or run `newgrp docker`) to apply Docker group permissions.
+
+---
+
+### ✅ Step 2: Clone the Repository
+
+Clone this project to your machine:
+
+```bash
 git clone https://github.com/YOUR_USERNAME/immich-selfhost.git
 cd immich-selfhost
-❗ Replace YOUR_USERNAME with your GitHub username.
+```
 
-✅ Step 3: Create Docker Compose File
-Create a file named docker-compose.yml:
+❗ **Replace** `YOUR_USERNAME` with your GitHub username.
 
-bash
-Copy
-Edit
+---
+
+### ✅ Step 3: Set Up Docker Compose
+
+Create a `docker-compose.yml` file:
+
+```bash
 nano docker-compose.yml
-Paste this configuration:
+```
 
-yaml
-Copy
-Edit
+Paste the following configuration:
+
+```yaml
 version: "3.9"
 services:
   immich:
@@ -94,46 +102,56 @@ services:
     image: valkey/valkey
     container_name: valkey
     restart: unless-stopped
-✅ Step 4: Start the Server
-bash
-Copy
-Edit
+```
+
+Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
+
+---
+
+### ✅ Step 4: Launch the Server
+
+Start the containers in detached mode:
+
+```bash
 docker-compose up -d
-Wait a minute, then visit:
-🔗 http://localhost:2283
+```
 
-✅ Step 5: Set Up Cloudflare Tunnel
-Install cloudflared:
+Wait a minute, then visit:  
+🔗 [http://localhost:2283](http://localhost:2283)
 
-bash
-Copy
-Edit
+---
+
+### ✅ Step 5: Configure Cloudflare Tunnel
+
+Install the `cloudflared` tool:
+
+```bash
 wget -O cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
 sudo dpkg -i cloudflared.deb
-Login to Cloudflare:
+```
 
-bash
-Copy
-Edit
+Authenticate with Cloudflare:
+
+```bash
 cloudflared tunnel login
-Create a Tunnel:
+```
 
-bash
-Copy
-Edit
+Create a tunnel:
+
+```bash
 cloudflared tunnel create immich-tunnel
-Create the config file:
+```
 
-bash
-Copy
-Edit
+Set up the tunnel configuration:
+
+```bash
 sudo mkdir -p /etc/cloudflared
 sudo nano /etc/cloudflared/config.yml
-Paste and edit this config:
+```
 
-yaml
-Copy
-Edit
+Paste and customize this config:
+
+```yaml
 tunnel: YOUR_TUNNEL_ID_HERE
 credentials-file: /etc/cloudflared/YOUR_TUNNEL_CREDENTIALS.json
 
@@ -141,58 +159,96 @@ ingress:
   - hostname: photos.YOURDOMAIN.com
     service: http://localhost:2283
   - service: http_status:404
-🟡 Replace:
+```
 
-YOUR_TUNNEL_ID_HERE — copy from cloudflared tunnel list
+🟡 **Replace:**
+- `YOUR_TUNNEL_ID_HERE` — Use the ID from `cloudflared tunnel list`
+- `YOUR_TUNNEL_CREDENTIALS.json` — Path provided after tunnel creation
+- `photos.YOURDOMAIN.com` — Your chosen subdomain in Cloudflare
 
-YOUR_TUNNEL_CREDENTIALS.json — path given after tunnel create
+Save and exit.
 
-photos.YOURDOMAIN.com — your subdomain from Cloudflare
+---
 
-✅ Step 6: Run the Tunnel as a Service
-bash
-Copy
-Edit
+### ✅ Step 6: Run the Tunnel as a Service
+
+Install and enable the tunnel service:
+
+```bash
 cloudflared service install
 sudo systemctl start cloudflared
 sudo systemctl enable cloudflared
-📸 Access Your Private Immich
-Now go to:
-🔗 https://photos.YOURDOMAIN.com
+```
 
-✅ Immich is running securely and remotely!
+---
 
-📦 Folder Structure
-bash
-Copy
-Edit
+## 📸 Access Your Immich Instance
+
+Visit your gallery at:  
+🔗 [https://photos.YOURDOMAIN.com](https://photos.YOURDOMAIN.com)
+
+✅ Your Immich server is now running securely and accessible remotely!
+
+---
+
+## 📦 Project Folder Structure
+
+```bash
 immich-selfhost/
 ├── docker-compose.yml
 ├── cloudflared/
 │   └── config.yml
-├── immich-data/         # media storage
-├── pgdata/              # postgres data
+├── immich-data/         # Stores your media
+├── pgdata/              # PostgreSQL data
 ├── screenshots/
 │   └── web-ui.png
 └── README.md
-🛠️ Tips
-Mobile upload? Install Immich app (Android/iOS) and use your domain.
+```
 
-Want to expose only via tunnel? Remove ports: from docker-compose.yml.
+---
 
-Backups? Mount an external drive to ./immich-data.
+## 🛠️ Useful Tips
 
-📌 Optional Improvements
-Add basic auth or SSO
+- **Mobile Upload:** Download the Immich app (Android/iOS) and connect using your domain.
+- **Tunnel-Only Access:** Remove the `ports:` section from `docker-compose.yml` to restrict access to the tunnel.
+- **Backups:** Mount an external drive to `./immich-data` for additional storage or redundancy.
 
-Enable object detection in Immich
+---
 
-Use a reverse proxy like Nginx (optional if not using Cloudflare Tunnel)
+## 📌 Optional Enhancements
 
-🙋‍♂️ About This Project
-This is a personal project that’s part of my homelab journey. I value data privacy and wanted to stop relying on paid third-party platforms for my photos.
+- Add **basic auth** or **SSO** for extra security
+- Enable **object detection** in Immich settings
+- Use a **reverse proxy** (e.g., Nginx) instead of Cloudflare Tunnel
 
-💬 Feel free to fork, star, or open issues if you try this too.
+---
 
-⭐ Like This Project?
-Give it a 🌟 star on GitHub if it helped you!
+## 🙋‍♂️ About This Project
+
+This is a personal homelab project driven by a passion for **data privacy** and a desire to break free from paid photo storage platforms. I hope it inspires others to take control of their media!
+
+💬 Feel free to fork, star, or submit issues if you give it a try.
+
+---
+
+## ⭐ Enjoyed This?
+
+If this project helped you, give it a 🌟 **star** on GitHub!
+
+---
+
+### 📝 Additional Notes
+
+- **Security:** Double-check your Cloudflare tunnel config to avoid exposing unintended services.
+- **Storage:** Keep an eye on `./immich-data` as it grows with your uploads.
+- **Updates:** Run `docker-compose pull && docker-compose up -d` to update Immich.
+
+---
+
+### 📸 Screenshots
+
+![Immich Web UI](screenshots/web-ui.png)
+
+---
+
+**Happy self-hosting!** 🎉
