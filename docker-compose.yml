@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:release
+    volumes:
+      - ./immich-data:/usr/src/app/upload
+    env_file:
+      - .env
+    depends_on:
+      - valkey
+      - database
+    ports:
+      - "2283:3001"
+    restart: always
+
+  immich-microservices:
+    image: ghcr.io/immich-app/immich-server:release
+    volumes:
+      - ./immich-data:/usr/src/app/upload
+    env_file:
+      - .env
+    depends_on:
+      - valkey
+      - database
+    restart: always
+
+  valkey:
+    image: valkey/valkey
+    restart: always
+
+  database:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: immich
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  immich-data:
+  pgdata:
