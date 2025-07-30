@@ -219,7 +219,7 @@ immich-selfhost/
 
 - Add **basic auth** or **SSO** for extra security
 - Enable **object detection** in Immich settings
-- Use a **reverse proxy** (e.g., Nginx) instead of Cloudflare Tunnel
+- Use a **reverse proxy** (Nginx) instead of Cloudflare Tunnel
 
 ---
 
