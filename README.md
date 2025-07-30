@@ -1,4 +1,4 @@
-# 📸 Self-Hosted Immich Server with Docker and Cloudflare Tunnel
+# 📸 Self-Hosted Photo Server without Port Forwarding
 
 This project enables you to host your own **photo and video gallery** using [Immich](https://github.com/immich-app/immich) on your personal server. It’s **secure**, **free**, and **private**, eliminating the need for paid services like Google Photos or iCloud to store your memories. The setup leverages **Docker**, **Cloudflare Tunnel**, and any machine with storage (e.g., an old laptop or desktop).
 
