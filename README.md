@@ -247,7 +247,9 @@ If this project helped you, give it a 🌟 **star** on GitHub!
 
 ### 📸 Screenshots
 
-![Immich Web UI](screenshots/web-ui.png)
+![Immich Web UI])
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/fa801f5a-66c8-493e-b40c-fb423992fabf" />
+
 
 ---
 
